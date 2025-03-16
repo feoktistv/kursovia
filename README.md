@@ -1,1 +1,2 @@
-# kursovia
+# kursovi
+rtrtbetetea
