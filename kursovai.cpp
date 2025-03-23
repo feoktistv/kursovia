@@ -3,6 +3,7 @@
 #include <ctime>
 #include <algorithm>
 #include <ncurses.h>
+#include <unistd.h>
 
 void printmap(std::vector<std::vector<int>> map, int N){
     
@@ -10,11 +11,19 @@ void printmap(std::vector<std::vector<int>> map, int N){
     for (int j = 0; j < N; ++j) {
       if (map[i][j] == 0) {
         mvprintw(i, j * 2, "- ");  // Умножаем j на 2 для пробела
-      } else if (map[i][j] == 1) {
+      }
+      else if (map[i][j] == 1) {
 	attron(COLOR_PAIR(1));
         mvprintw(i, j * 2, "@ ");  // Умножаем j на 2 для пробела
 	attroff(COLOR_PAIR(1));      
-	} else if (map[i][j] == 2 || map[i][j] == 4) {
+	}
+	 else if (map[i][j] == 5) {
+	attron(COLOR_PAIR(4));
+        mvprintw(i, j * 2, "@ ");  // Умножаем j на 2 для пробела
+	attroff(COLOR_PAIR(4));      
+	}
+
+	 else if (map[i][j] == 2 || map[i][j] == 4) {
         attron(COLOR_PAIR(2));
         mvprintw(i, j * 2, "* ");  // Умножаем j на 2 для пробела
         attroff(COLOR_PAIR(2));
@@ -23,7 +32,7 @@ void printmap(std::vector<std::vector<int>> map, int N){
       }
     }
   }
-getch();
+//getch();
   refresh();  // Обновляем экран
 }
 std::vector<std::vector<int>> makemap(int N, int a, int b){
@@ -69,6 +78,65 @@ std::vector<std::vector<int>> makemap(int N, int a, int b){
     return map11;
 }
 
+std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N){
+    std::vector<std::vector<int>> map11 = map;
+    
+    for(int i = 0; i<N; i++){
+        for(int j = 0; j<N; j++){
+            
+            if(map[i][j]==1){
+
+                char MM;
+                               map11[i][j]=5;
+		printmap(map11, N);
+
+		std::cin>>MM;
+              		map11[i][j]=0;
+                if(MM == 'd'){
+                    if(map[i][j+1]!=2){
+                        map11[i][j+1]=1;
+                    }
+                    else{
+                        map11[i][j+1]=2;
+                    }
+                }
+                else if(MM == 'a'){
+                    if(map[i][j-1]!=2){
+                        map11[i][j-1]=1;
+                    }
+                    else{
+                        map11[i][j-1]=2;
+                    }
+                }
+                else if(MM == 'w'){
+                    if(map[i-1][j]!=2){
+                        map11[i-1][j]=1;
+                    }
+                    else{
+                        map11[i-1][j]=2;
+                    }
+                }
+                else if(MM == 's'){
+                    if(map[i+1][j]!=2){
+                        map11[i+1][j]=1;
+                    }
+                    else{
+                        map11[i+1][j]=2;
+                    }
+                
+                }
+                else{
+			map11[i][j]=1;
+
+		}
+            printmap(map11, N);
+                
+            }
+        }
+    }
+
+    return map11;
+}
 
 std::vector<std::vector<int>> muv2(std::vector<std::vector<int>> map, int N){
     std::vector<std::vector<int>> map11 = map;
@@ -119,16 +187,58 @@ std::vector<std::vector<int>> muv2(std::vector<std::vector<int>> map, int N){
                         }
                         } 
                     }
-                }    
- 
+usleep(10000);
              printmap(map11, N);
-                
+              
+  }    
+ 	                     
             }
         }
     }
     return map11;
 }
 
+std::vector<std::vector<int>> muv3(std::vector<std::vector<int>> map, int N){
+    std::vector<std::vector<int>> map11 = map;
+    
+    for(int i = 0; i<N; i++){
+        for(int j = 0; j<N; j++){
+            
+            if(map[i][j]==1){
+                char MM;
+               
+                map11[i][j]=5;
+		printmap(map11, N);
+			
+		std::cin>>MM;
+		map11[i][j]=1;
+
+                
+                if(MM == 'd'){
+                        map11[i][j+1]=3;
+                }
+                else if(MM == 'a'){
+                    map11[i][j-1]=3;
+                    
+                }
+                else if(MM == 'w'){
+                    
+                        map11[i-1][j]=3;
+                    
+                }
+                else if(MM == 's'){
+                   
+                        map11[i+1][j]=3;
+                    
+                }
+            
+             //printmap(map11, N);    
+            }
+        }
+    }
+
+    return map11;
+}
 
 int main()
 {
@@ -136,15 +246,19 @@ int main()
     std::vector<std::vector<int>> map;
     map=makemap(N, 3, 3);
     initscr();
+    cbreak();
+    noecho();
     start_color();
     init_pair(1, COLOR_RED, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
 
     init_pair(3, COLOR_BLUE, COLOR_BLACK);
+    init_pair(4, COLOR_YELLOW, COLOR_BLACK);
 
     printmap(map, N);
     for(int i = 0; i<10; i++){
-   
+    map = muv(map, N);
+    map = muv3(map, N);
     map = muv2(map, N);
     
     }
