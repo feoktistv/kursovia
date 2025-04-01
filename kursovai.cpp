@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <ncurses.h>
 #include <unistd.h>
+#include <string.h>
 
 void printmap(std::vector<std::vector<int>> map, int N){
     
@@ -240,9 +241,125 @@ std::vector<std::vector<int>> muv3(std::vector<std::vector<int>> map, int N){
     return map11;
 }
 
+bool checkVin(std::vector<std::vector<int>> map, int N){
+    std::vector<std::vector<int>> map1 = map;
+    for(int i = 0; i<N; i++){
+        for(int j = 0; j<N; j++){
+            if (map[i][j]==3){
+                for(int j1=0; j1<N; j1++){
+                    if(map[i][j1]!=3){
+                        map1[i][j1]=10;
+                    }
+                }
+            break;
+        } 
+    }
+    }
+   
+    int sum=0;
+    for(int j = 0; j<N; j++){
+        for(int i = 0; i<N; i++){
+            if (map[i][j]==3){
+                for(int i1=0; i1<N; i1++){
+                    if(map[i1][j]!=3 and map1[i1][j]==10){
+                        map1[i1][j]=9;
+                        sum=sum+1;
+                    }
+                }
+            break;
+        } 
+    }
+    }
+    for(int j0 = 0; j0<sum; j0++){
+    for(int j = 0; j<N; j++){
+        for(int i = 0; i<N; i++){
+            if (map1[i][j]==9 and i>0 and i<(N-1) and j>0 and j<(N-1)){
+                if(map1[i+1][j]==0 or map1[i-1][j]==0 or
+                map1[i][j+1]==0 or map1[i][j-1]==0 or 
+                map1[i+1][j]==10 or map1[i-1][j]==10 or
+                map1[i][j+1]==10 or map1[i][j-1]==10){
+                    map1[i][j]=0;
+                }   
+                }
+            else if(map1[i][j]==9 and i == 0 and j == 0){
+               if(map1[i+1][j]==0 or map1[i][j+1]==0 or 
+                map1[i+1][j]==10 or map1[i][j+1]==10){
+                    map1[i][j]=0;
+                    
+                } 
+            }
+            else if(map1[i][j]==9 and i == (N-1) and j == (N-1)){
+               if(map1[i-1][j]==0 or map1[i][j-1]==0 or 
+                map1[i-1][j]==10 or map1[i][j-1]==10){
+                    map1[i][j]=0;
+                    
+                } 
+            }    
+            else if(map1[i][j]==9 and i == 0 and j == (N-1)){
+               if(map1[i+1][j]==0 or map1[i][j-1]==0 or 
+                map1[i+1][j]==10 or map1[i][j-1]==10){
+                    map1[i][j]=0;
+                    
+                } 
+            }     
+              
+             else if(map1[i][j]==9 and i == (N-1) and j == 0){
+               if(map1[i-1][j]==0 or map1[i][j+1]==0 or 
+                map1[i-1][j]==10 or map1[i][j+1]==10){
+                    map1[i][j]=0;
+                    
+                } 
+            }   
+            
+            if (map1[i][j]==9 and i==0 and j>0 and j<(N-1)){
+                if(map1[i+1][j]==0 or map1[i][j+1]==0 
+                or map1[i][j-1]==0 or map1[i+1][j]==10
+                or map1[i][j+1]==10 or map1[i][j-1]==10){
+                    map1[i][j]=0;
+                }
+            }
+            if (map1[i][j]==9 and i==(N-1) and j>0 and j<(N-1)){
+                if(map1[i-1][j]==0 or map1[i][j+1]==0 
+                or map1[i][j-1]==0 or map1[i-1][j]==10
+                or map1[i][j+1]==10 or map1[i][j-1]==10){
+                    map1[i][j]=0;
+                }
+            }
+            if (map1[i][j]==9 and i>0 and i<(N-1) and j==0){
+                if(map1[i+1][j]==0 or map1[i-1][j]==0 or
+                map1[i][j+1]==0 or map1[i+1][j]==10
+                or map1[i-1][j]==10 or map1[i][j+1]==10){
+                    map1[i][j]=0;
+                }   
+                }
+            if (map1[i][j]==9 and i>0 and i<(N-1) and j==(N-1)){
+                if(map1[i+1][j]==0 or map1[i-1][j]==0 or
+                map1[i][j-1]==0 or map1[i+1][j]==10
+                or map1[i-1][j]==10 or map1[i][j-1]==10){
+                    map1[i][j]=0;
+                }   
+                }
+            
+            }
+        
+    }
+    }
+    for(int i = 0; i<N; i++){
+    for(int j = 0; j<N; j++){
+        if(map1[i][j]==9 and map[i][j]==1){
+            return true;
+        }
+        
+    }
+    }
+     return false;
+}
+
+
 int main()
 {
     int N=10;	
+    bool win;
     std::vector<std::vector<int>> map;
     map=makemap(N, 3, 3);
     initscr();
@@ -260,9 +377,28 @@ int main()
     map = muv(map, N);
     map = muv3(map, N);
     map = muv2(map, N);
-    
+    win=checkVin(map, N);
+    if(win==true){
+clear();
+int max_y, max_x;
+  getmaxyx(stdscr, max_y, max_x);
+
+    const char* message = "WIN";
+  int message_len = strlen(message);
+  int start_y = max_y / 2;
+  int start_x = (max_x - message_len) / 2;
+
+
+  mvprintw(start_y, start_x, message);
+
+ 
+  refresh();
+
+    getch();
+    break;
     }
-//refresh();
+    }
+
    endwin(); 
     return 0;
 }
