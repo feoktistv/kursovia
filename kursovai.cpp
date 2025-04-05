@@ -11,30 +11,30 @@ void printmap(std::vector<std::vector<int>> map, int N){
   for (int i = 0; i < N; ++i) {
     for (int j = 0; j < N; ++j) {
       if (map[i][j] == 0) {
-        mvprintw(i, j * 2, "- ");  // Умножаем j на 2 для пробела
+        mvprintw(i, j * 2, "- ");  
       }
       else if (map[i][j] == 1) {
 	attron(COLOR_PAIR(1));
-        mvprintw(i, j * 2, "@ ");  // Умножаем j на 2 для пробела
+        mvprintw(i, j * 2, "@ ");  
 	attroff(COLOR_PAIR(1));      
 	}
 	 else if (map[i][j] == 5) {
 	attron(COLOR_PAIR(4));
-        mvprintw(i, j * 2, "@ ");  // Умножаем j на 2 для пробела
+        mvprintw(i, j * 2, "@ ");  
 	attroff(COLOR_PAIR(4));      
 	}
 
 	 else if (map[i][j] == 2 || map[i][j] == 4) {
         attron(COLOR_PAIR(2));
-        mvprintw(i, j * 2, "* ");  // Умножаем j на 2 для пробела
+        mvprintw(i, j * 2, "* ");  
         attroff(COLOR_PAIR(2));
       } else if (map[i][j] == 3) {
-        mvprintw(i, j * 2, "# ");  // Умножаем j на 2 для пробела
+        mvprintw(i, j * 2, "# ");  
       }
     }
   }
-//getch();
-  refresh();  // Обновляем экран
+
+  refresh();  
 }
 std::vector<std::vector<int>> makemap(int N, int a, int b){
     std::vector<std::vector<int>> map11;
@@ -68,15 +68,15 @@ std::vector<std::vector<int>> makemap(int N, int a, int b){
             i++;
         }    
     
-    } /*
-    map11[0][2] = 1;
-    map11[N-1][2] = 2;
-    map11[2][2] = 3;
-    map11[2][1] = 3;
-    map11[2][3] = 3;
-    //map11[1][1] = 3;
-    //map11[1][3] = 3;*/
-    return map11;
+    }/*
+    map11[4][4] = 2;
+        map11[5][4] = 3;
+    map11[3][4] = 3;
+    map11[4][5] = 3;
+map11[4][3] = 3;
+map11[6][6] = 1;*/
+
+        return map11;
 }
 
 std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N){
@@ -343,8 +343,7 @@ bool checkVin(std::vector<std::vector<int>> map, int N){
             }
         
     }
-    }
-    for(int i = 0; i<N; i++){
+    }    for(int i = 0; i<N; i++){
     for(int j = 0; j<N; j++){
         if(map1[i][j]==9 and map[i][j]==1){
             return true;
@@ -355,11 +354,283 @@ bool checkVin(std::vector<std::vector<int>> map, int N){
      return false;
 }
 
+bool checkLose(std::vector<std::vector<int>> map, int N){
+    for(int i = 0; i<N; i++){
+    for(int j = 0; j<N; j++){
+        if(map[i][j]==1){
+            return false;
+        }
+        
+    }
+}
+     return true;
+
+}
+
+std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
+    std::vector<std::vector<int>> map11 ;
+    std::vector<std::vector<int>> mapEnd = map;
+     std::vector<std::vector<int>> mapFind = map;
+    srand(time(0));
+    for(int i000 = 0; i000<N; i000++){
+        for(int j000 = 0; j000<N; j000++){
+            if(mapFind[i000][j000]==2){
+                              map11 = map;
+                
+                
+    int L=1, x0, y0, x00, y00;
+ int len;
+    bool find = false;
+    int inf =-1 ;//std::numeric_limits<int>::max();
+    for(int i = 0; i<N; i++){
+        for(int j = 0; j<N; j++){
+          
+            
+            {if(map11[i][j]==2 and i==i000 and j==j000){
+                
+                map11[i][j]=0;
+                x0=i;
+                y0=j;
+                
+            }
+            else{
+             
+                map11[i][j]=inf;
+            }}
+            
+         }   
+        }
+        mapFind[i000][j000]=4;
+        //printmap(map11, N);
+        int len2=N*N;
+	int limit=0;
+        while(find == false){
+        for(int x = x0; x<N; x++){
+        for(int y = y0; y<N; y++){
+           
+            
+            if((x+1)<N and map11[x+1][y]==inf and map11[x][y]!= inf and map[x+1][y]!=3){
+                map11[x+1][y]=map11[x][y]+1;
+                if(map[x+1][y]==1 and map11[x+1][y]<len2){
+                    len2=map11[x+1][y];
+                    find = true;
+                    x00=x+1;
+                    y00=y;
+                }
+            }
+           
+            if((y-1)>0 and map11[x][y-1]==inf and map11[x][y]!= inf and map[x][y-1]!=3){
+                map11[x][y-1]=map11[x][y]+1;
+                 if(map[x][y-1]==1 and map11[x][y-1]<len2){
+                    len2=map[x][y-1];
+                    find = true;
+                    x00=x;
+                    y00=y-1;
+                }
+            }
+           
+            if((y+1)<N and map11[x][y+1]==inf and map11[x][y]!= inf and map[x][y+1]!=3) {
+                map11[x][y+1]=map11[x][y]+1;
+                 if(map[x][y+1]==1  and map11[x][y+1]<len2){
+                     len2=map[x][y+1];
+                    find = true;
+                    x00=x;
+                    y00=y+1;
+                }
+            }
+           
+            if((x-1)>0 and map11[x-1][y]==inf and map11[x][y]!= inf and map[x-1][y]!=3){
+                map11[x-1][y]=map11[x][y]+1;
+                if(map[x-1][y]==1 and map11[x-1][y]<len2){
+                     len2=map11[x-1][y];
+                    find = true;
+                    x00=x-1;
+                    y00=y;
+                }
+            }
+             
+        }}
+       
+            for(int x = x0; x>=0; x--){
+        for(int y = y0; y>=0; y--){
+        
+            
+           if((x+1)<N and map11[x+1][y]==inf and map11[x][y]!= inf and map[x+1][y]!=3){
+                map11[x+1][y]=map11[x][y]+1;
+                if(map[x+1][y]==1 and map11[x+1][y]<len2){
+                    len2=map11[x+1][y];
+                    find = true;
+                    x00=x+1;
+                    y00=y;
+                }
+            }
+            
+            if((y-1)>0 and map11[x][y-1]==inf and map11[x][y]!= inf and map[x][y-1]!=3){
+                map11[x][y-1]=map11[x][y]+1;
+                 if(map[x][y-1]==1 and map11[x][y-1]<len2){
+                    len2=map[x][y-1];
+                    find = true;
+                    x00=x;
+                    y00=y-1;
+                }
+            }
+            
+            if((y+1)<N and map11[x][y+1]==inf and map11[x][y]!= inf and map[x][y+1]!=3) {
+                map11[x][y+1]=map11[x][y]+1;
+                 if(map[x][y+1]==1  and map11[x][y+1]<len2){
+                     len2=map[x][y+1];
+                    find = true;
+                    x00=x;
+                    y00=y+1;
+                }
+            }
+             
+            if((x-1)>0 and map11[x-1][y]==inf and map11[x][y]!= inf and map[x-1][y]!=3){
+                map11[x-1][y]=map11[x][y]+1;
+                if(map[x-1][y]==1 and map11[x-1][y]<len2){
+                     len2=map11[x-1][y];
+                    find = true;
+                    x00=x-1;
+                    y00=y;
+                }
+            }
+            
+        }}
+        
+            for(int x = x0; x<N; x++){
+        for(int y = y0; y>=0; y--){
+        
+           
+            if((x+1)<N and map11[x+1][y]==inf and map11[x][y]!= inf and map[x+1][y]!=3){
+                map11[x+1][y]=map11[x][y]+1;
+                if(map[x+1][y]==1 and map11[x+1][y]<len2){
+                    len2=map11[x+1][y];
+                    find = true;
+                    x00=x+1;
+                    y00=y;
+                }
+            }
+           
+            if((y-1)>0 and map11[x][y-1]==inf and map11[x][y]!= inf and map[x][y-1]!=3){
+                map11[x][y-1]=map11[x][y]+1;
+                 if(map[x][y-1]==1 and map11[x][y-1]<len2){
+                    len2=map[x][y-1];
+                    find = true;
+                    x00=x;
+                    y00=y-1;
+                }
+            }
+            if((y+1)<N and map11[x][y+1]==inf and map11[x][y]!= inf and map[x][y+1]!=3) {
+                map11[x][y+1]=map11[x][y]+1;
+                 if(map[x][y+1]==1  and map11[x][y+1]<len2){
+                     len2=map[x][y+1];
+                    find = true;
+                    x00=x;
+                    y00=y+1;
+                }
+            }
+            if((x-1)>0 and map11[x-1][y]==inf and map11[x][y]!= inf and map[x-1][y]!=3){
+                map11[x-1][y]=map11[x][y]+1;
+                if(map[x-1][y]==1 and map11[x-1][y]<len2){
+                     len2=map11[x-1][y];
+                    find = true;
+                    x00=x-1;
+                    y00=y;
+                }
+            }
+            
+        }}
+        
+       for(int x = x0; x>=0; x--){
+        for(int y = y0; y<N; y++){
+        
+            
+            if((x+1)<N and map11[x+1][y]==inf and map11[x][y]!= inf and map[x+1][y]!=3){
+                map11[x+1][y]=map11[x][y]+1;
+                if(map[x+1][y]==1 and map11[x+1][y]<len2){
+                    len2=map11[x+1][y];
+                    find = true;
+                    x00=x+1;
+                    y00=y;
+                }
+            }
+            if((y-1)>0 and map11[x][y-1]==inf and map11[x][y]!= inf and map[x][y-1]!=3){
+                map11[x][y-1]=map11[x][y]+1;
+                 if(map[x][y-1]==1 and map11[x][y-1]<len2){
+                    len2=map[x][y-1];
+                    find = true;
+                    x00=x;
+                    y00=y-1;
+                }
+            }
+            if((y+1)<N and map11[x][y+1]==inf and map11[x][y]!= inf and map[x][y+1]!=3) {
+                map11[x][y+1]=map11[x][y]+1;
+                 if(map[x][y+1]==1  and map11[x][y+1]<len2){
+                     len2=map[x][y+1];
+                    find = true;
+                    x00=x;
+                    y00=y+1;
+                }
+            }
+            if((x-1)>0 and map11[x-1][y]==inf and map11[x][y]!= inf and map[x-1][y]!=3){
+                map11[x-1][y]=map11[x][y]+1;
+                if(map[x-1][y]==1 and map11[x-1][y]<len2){
+                     len2=map11[x-1][y];
+                    find = true;
+                    x00=x-1;
+                    y00=y;
+                }
+            }
+            
+        }}
+	limit++;
+	if(limit>=N*N*N){
+		x00=x0;
+		y00=y0;
+		break;
+			}
+        }
+        
+         len = map11[x00][y00];
+    for(int i = 0; i<len-1; i++){   
+        //mapEnd[x00][y00] = 2;
+       if(x00+1<N and map11[x00+1][y00]<map11[x00][y00] and map11[x00+1][y00]!=inf){
+                    
+                    x00=x00+1;
+                    
+                }
+        else if(x00-1>0 and map11[x00-1][y00]<map11[x00][y00] and map11[x00-1][y00]!=inf){
+                    
+                    x00=x00-1;
+                    
+                }
+        else if(y00-1>0 and map11[x00][y00-1]<map11[x00][y00] and map11[x00][y00-1]!=inf){
+                    
+                    y00=y00-1;
+                }
+        else if(y00+1<N and map11[x00][y00+1]<map11[x00][y00] and map11[x00][y00+1]!=inf){
+                    
+                    y00=y00+1;
+                }
+    //printmap(mapEnd, N); 
+    }
+                mapEnd[x00][y00] = 2;
+		
+            }
+	
+           
+        	}
+        
+    }
+
+    printmap(mapEnd, N);  
+    return mapEnd; 
+}
 
 int main()
 {
     int N=10;	
-    bool win;
+    bool win, lose;
     std::vector<std::vector<int>> map;
     map=makemap(N, 3, 3);
     initscr();
@@ -376,9 +647,19 @@ int main()
     for(int i = 0; i<10; i++){
     map = muv(map, N);
     map = muv3(map, N);
-    map = muv2(map, N);
     win=checkVin(map, N);
-    if(win==true){
+	if(win==true){
+	goto start; 
+}
+    map = bestMuv(map, N);
+lose=checkLose(map, N);
+	if(lose==true){
+	goto start1; 
+}
+
+    }
+start:    
+{
 clear();
 int max_y, max_x;
   getmaxyx(stdscr, max_y, max_x);
@@ -395,9 +676,33 @@ int max_y, max_x;
   refresh();
 
     getch();
-    break;
+    
     }
-    }
+   endwin(); 
+    return 0;
+
+start1:    
+
+clear();
+int max_y, max_x;
+  getmaxyx(stdscr, max_y, max_x);
+
+  const char* message = "LOSE";
+  int message_len = strlen(message);
+  int start_y = max_y / 2;
+  int start_x = (max_x - message_len) / 2;
+
+
+  mvprintw(start_y, start_x, message);
+
+ 
+  refresh();
+
+    getch();
+    
+    
+ 
+   
 
    endwin(); 
     return 0;
