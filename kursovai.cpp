@@ -5,36 +5,65 @@
 #include <ncurses.h>
 #include <unistd.h>
 #include <string.h>
+#include <fstream>
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 
 void printmap(std::vector<std::vector<int>> map, int N){
-    
+  
+
+  int height=30, width=40;
+  //getmaxyx(stdscr, height, width);
+
+    int startY =0;
+  int startX = 0;
+for (int i = 0; i < 2*N + 1; i++) { // +2 для рамок, сверху и снизу
+    move(startY, startX + i); // Верхняя граница
+    addch(ACS_HLINE);
+
+    move(startY + N + 1, startX + i); // Нижняя граница
+    addch(ACS_HLINE);
+  }
+
+  for (int i = 0; i < N + 2; ++i) { // +2 для рамок, по бокам
+    move(startY + i, startX); // Левая граница
+    addch(ACS_VLINE);
+
+    move(startY + i, startX + 2 * N + 1); // Правая граница
+    addch(ACS_VLINE);
+  }
+
+ 
+  move(startY, startX); addch(ACS_ULCORNER);
+  move(startY, startX + 2 * N + 1); addch(ACS_URCORNER);
+  move(startY + N + 1, startX); addch(ACS_LLCORNER);
+  move(startY + N + 1, startX + 2 * N + 1); addch(ACS_LRCORNER);
   for (int i = 0; i < N; ++i) {
     for (int j = 0; j < N; ++j) {
-      if (map[i][j] == 0) {
-        mvprintw(i, j * 2, "- ");  
+                if (map[i][j] == 0) {
+        mvprintw(i+1, j * 2+1, "- ");  // Умножаем j на 2 для пробела
       }
       else if (map[i][j] == 1) {
 	attron(COLOR_PAIR(1));
-        mvprintw(i, j * 2, "@ ");  
+        mvprintw(i+1, j * 2+1, "@ ");  // Умножаем j на 2 для пробела
 	attroff(COLOR_PAIR(1));      
 	}
 	 else if (map[i][j] == 5) {
 	attron(COLOR_PAIR(4));
-        mvprintw(i, j * 2, "@ ");  
+        mvprintw(i+1, j * 2+1, "@ ");  // Умножаем j на 2 для пробела
 	attroff(COLOR_PAIR(4));      
 	}
 
 	 else if (map[i][j] == 2 || map[i][j] == 4) {
         attron(COLOR_PAIR(2));
-        mvprintw(i, j * 2, "* ");  
+        mvprintw(i+1, j * 2+1, "* ");  
         attroff(COLOR_PAIR(2));
       } else if (map[i][j] == 3) {
-        mvprintw(i, j * 2, "# ");  
+        mvprintw(i+1, j * 2+1, "# ");  
       }
-    }
   }
-
-  refresh();  
+}
+   refresh();  
 }
 std::vector<std::vector<int>> makemap(int N, int a, int b){
     std::vector<std::vector<int>> map11;
@@ -69,13 +98,9 @@ std::vector<std::vector<int>> makemap(int N, int a, int b){
         }    
     
     }/*
-    map11[4][4] = 2;
-        map11[5][4] = 3;
-    map11[3][4] = 3;
-    map11[4][5] = 3;
-map11[4][3] = 3;
-map11[6][6] = 1;*/
-
+    map11[1][0] = 1;
+    map11[6][6] = 2;
+*/
         return map11;
 }
 
@@ -88,7 +113,7 @@ std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N){
             if(map[i][j]==1){
 
                 char MM;
-                               map11[i][j]=5;
+                map11[i][j]=5;
 		printmap(map11, N);
 
 		std::cin>>MM;
@@ -98,7 +123,7 @@ std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N){
                         map11[i][j+1]=1;
                     }
                     else{
-                        map11[i][j+1]=2;
+                        map11[i][j+1]=6;
                     }
                 }
                 else if(MM == 'a'){
@@ -106,7 +131,7 @@ std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N){
                         map11[i][j-1]=1;
                     }
                     else{
-                        map11[i][j-1]=2;
+                        map11[i][j-1]=6;
                     }
                 }
                 else if(MM == 'w'){
@@ -114,7 +139,7 @@ std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N){
                         map11[i-1][j]=1;
                     }
                     else{
-                        map11[i-1][j]=2;
+                        map11[i-1][j]=6;
                     }
                 }
                 else if(MM == 's'){
@@ -122,7 +147,7 @@ std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N){
                         map11[i+1][j]=1;
                     }
                     else{
-                        map11[i+1][j]=2;
+                        map11[i+1][j]=6;
                     }
                 
                 }
@@ -142,7 +167,7 @@ std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N){
 std::vector<std::vector<int>> muv2(std::vector<std::vector<int>> map, int N){
     std::vector<std::vector<int>> map11 = map;
     
-    srand(time(0));
+    
     int I = N+1;
     int J = N+1;
     
@@ -241,7 +266,7 @@ std::vector<std::vector<int>> muv3(std::vector<std::vector<int>> map, int N){
     return map11;
 }
 
-bool checkVin(std::vector<std::vector<int>> map, int N){
+bool checkVin(std::vector<std::vector<int>> map, int N, int &area){
     std::vector<std::vector<int>> map1 = map;
     for(int i = 0; i<N; i++){
         for(int j = 0; j<N; j++){
@@ -270,6 +295,7 @@ bool checkVin(std::vector<std::vector<int>> map, int N){
         } 
     }
     }
+    int area1=sum;
     for(int j0 = 0; j0<sum; j0++){
     for(int j = 0; j<N; j++){
         for(int i = 0; i<N; i++){
@@ -279,27 +305,28 @@ bool checkVin(std::vector<std::vector<int>> map, int N){
                 map1[i+1][j]==10 or map1[i-1][j]==10 or
                 map1[i][j+1]==10 or map1[i][j-1]==10){
                     map1[i][j]=0;
+		     area1--;
                 }   
                 }
             else if(map1[i][j]==9 and i == 0 and j == 0){
                if(map1[i+1][j]==0 or map1[i][j+1]==0 or 
                 map1[i+1][j]==10 or map1[i][j+1]==10){
                     map1[i][j]=0;
-                    
+                    area1--;
                 } 
             }
             else if(map1[i][j]==9 and i == (N-1) and j == (N-1)){
                if(map1[i-1][j]==0 or map1[i][j-1]==0 or 
                 map1[i-1][j]==10 or map1[i][j-1]==10){
                     map1[i][j]=0;
-                    
+                    area1--;
                 } 
             }    
             else if(map1[i][j]==9 and i == 0 and j == (N-1)){
                if(map1[i+1][j]==0 or map1[i][j-1]==0 or 
                 map1[i+1][j]==10 or map1[i][j-1]==10){
                     map1[i][j]=0;
-                    
+                    area1--;
                 } 
             }     
               
@@ -307,7 +334,7 @@ bool checkVin(std::vector<std::vector<int>> map, int N){
                if(map1[i-1][j]==0 or map1[i][j+1]==0 or 
                 map1[i-1][j]==10 or map1[i][j+1]==10){
                     map1[i][j]=0;
-                    
+                    area1--;
                 } 
             }   
             
@@ -316,6 +343,7 @@ bool checkVin(std::vector<std::vector<int>> map, int N){
                 or map1[i][j-1]==0 or map1[i+1][j]==10
                 or map1[i][j+1]==10 or map1[i][j-1]==10){
                     map1[i][j]=0;
+		     area1--;
                 }
             }
             if (map1[i][j]==9 and i==(N-1) and j>0 and j<(N-1)){
@@ -323,6 +351,7 @@ bool checkVin(std::vector<std::vector<int>> map, int N){
                 or map1[i][j-1]==0 or map1[i-1][j]==10
                 or map1[i][j+1]==10 or map1[i][j-1]==10){
                     map1[i][j]=0;
+                    area1--;
                 }
             }
             if (map1[i][j]==9 and i>0 and i<(N-1) and j==0){
@@ -330,6 +359,7 @@ bool checkVin(std::vector<std::vector<int>> map, int N){
                 map1[i][j+1]==0 or map1[i+1][j]==10
                 or map1[i-1][j]==10 or map1[i][j+1]==10){
                     map1[i][j]=0;
+		     area1--;
                 }   
                 }
             if (map1[i][j]==9 and i>0 and i<(N-1) and j==(N-1)){
@@ -337,12 +367,14 @@ bool checkVin(std::vector<std::vector<int>> map, int N){
                 map1[i][j-1]==0 or map1[i+1][j]==10
                 or map1[i-1][j]==10 or map1[i][j-1]==10){
                     map1[i][j]=0;
+		     area1--;
                 }   
                 }
             
             }
         
     }
+	  area=area1;
     }    for(int i = 0; i<N; i++){
     for(int j = 0; j<N; j++){
         if(map1[i][j]==9 and map[i][j]==1){
@@ -402,7 +434,7 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
         }
         mapFind[i000][j000]=4;
         //printmap(map11, N);
-        int len2=N*N;
+        int len2=N*N*100;
 	int limit=0;
         while(find == false){
         for(int x = x0; x<N; x++){
@@ -419,7 +451,7 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
                 }
             }
            
-            if((y-1)>0 and map11[x][y-1]==inf and map11[x][y]!= inf and map[x][y-1]!=3){
+            if((y-1)>=0 and map11[x][y-1]==inf and map11[x][y]!= inf and map[x][y-1]!=3){
                 map11[x][y-1]=map11[x][y]+1;
                  if(map[x][y-1]==1 and map11[x][y-1]<len2){
                     len2=map[x][y-1];
@@ -439,7 +471,7 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
                 }
             }
            
-            if((x-1)>0 and map11[x-1][y]==inf and map11[x][y]!= inf and map[x-1][y]!=3){
+            if((x-1)>=0 and map11[x-1][y]==inf and map11[x][y]!= inf and map[x-1][y]!=3){
                 map11[x-1][y]=map11[x][y]+1;
                 if(map[x-1][y]==1 and map11[x-1][y]<len2){
                      len2=map11[x-1][y];
@@ -451,6 +483,7 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
              
         }}
        
+
             for(int x = x0; x>=0; x--){
         for(int y = y0; y>=0; y--){
         
@@ -464,8 +497,8 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
                     y00=y;
                 }
             }
-            
-            if((y-1)>0 and map11[x][y-1]==inf and map11[x][y]!= inf and map[x][y-1]!=3){
+           
+            if((y-1)>=0 and map11[x][y-1]==inf and map11[x][y]!= inf and map[x][y-1]!=3){
                 map11[x][y-1]=map11[x][y]+1;
                  if(map[x][y-1]==1 and map11[x][y-1]<len2){
                     len2=map[x][y-1];
@@ -474,7 +507,7 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
                     y00=y-1;
                 }
             }
-            
+           
             if((y+1)<N and map11[x][y+1]==inf and map11[x][y]!= inf and map[x][y+1]!=3) {
                 map11[x][y+1]=map11[x][y]+1;
                  if(map[x][y+1]==1  and map11[x][y+1]<len2){
@@ -484,8 +517,8 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
                     y00=y+1;
                 }
             }
-             
-            if((x-1)>0 and map11[x-1][y]==inf and map11[x][y]!= inf and map[x-1][y]!=3){
+           
+            if((x-1)>=0 and map11[x-1][y]==inf and map11[x][y]!= inf and map[x-1][y]!=3){
                 map11[x-1][y]=map11[x][y]+1;
                 if(map[x-1][y]==1 and map11[x-1][y]<len2){
                      len2=map11[x-1][y];
@@ -494,7 +527,7 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
                     y00=y;
                 }
             }
-            
+             
         }}
         
             for(int x = x0; x<N; x++){
@@ -511,7 +544,7 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
                 }
             }
            
-            if((y-1)>0 and map11[x][y-1]==inf and map11[x][y]!= inf and map[x][y-1]!=3){
+            if((y-1)>=0 and map11[x][y-1]==inf and map11[x][y]!= inf and map[x][y-1]!=3){
                 map11[x][y-1]=map11[x][y]+1;
                  if(map[x][y-1]==1 and map11[x][y-1]<len2){
                     len2=map[x][y-1];
@@ -520,6 +553,7 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
                     y00=y-1;
                 }
             }
+           
             if((y+1)<N and map11[x][y+1]==inf and map11[x][y]!= inf and map[x][y+1]!=3) {
                 map11[x][y+1]=map11[x][y]+1;
                  if(map[x][y+1]==1  and map11[x][y+1]<len2){
@@ -529,7 +563,8 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
                     y00=y+1;
                 }
             }
-            if((x-1)>0 and map11[x-1][y]==inf and map11[x][y]!= inf and map[x-1][y]!=3){
+           
+            if((x-1)>=0 and map11[x-1][y]==inf and map11[x][y]!= inf and map[x-1][y]!=3){
                 map11[x-1][y]=map11[x][y]+1;
                 if(map[x-1][y]==1 and map11[x-1][y]<len2){
                      len2=map11[x-1][y];
@@ -538,7 +573,7 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
                     y00=y;
                 }
             }
-            
+             
         }}
         
        for(int x = x0; x>=0; x--){
@@ -554,7 +589,8 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
                     y00=y;
                 }
             }
-            if((y-1)>0 and map11[x][y-1]==inf and map11[x][y]!= inf and map[x][y-1]!=3){
+           
+            if((y-1)>=0 and map11[x][y-1]==inf and map11[x][y]!= inf and map[x][y-1]!=3){
                 map11[x][y-1]=map11[x][y]+1;
                  if(map[x][y-1]==1 and map11[x][y-1]<len2){
                     len2=map[x][y-1];
@@ -563,6 +599,7 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
                     y00=y-1;
                 }
             }
+           
             if((y+1)<N and map11[x][y+1]==inf and map11[x][y]!= inf and map[x][y+1]!=3) {
                 map11[x][y+1]=map11[x][y]+1;
                  if(map[x][y+1]==1  and map11[x][y+1]<len2){
@@ -572,7 +609,8 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
                     y00=y+1;
                 }
             }
-            if((x-1)>0 and map11[x-1][y]==inf and map11[x][y]!= inf and map[x-1][y]!=3){
+           
+            if((x-1)>=0 and map11[x-1][y]==inf and map11[x][y]!= inf and map[x-1][y]!=3){
                 map11[x-1][y]=map11[x][y]+1;
                 if(map[x-1][y]==1 and map11[x-1][y]<len2){
                      len2=map11[x-1][y];
@@ -581,7 +619,7 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
                     y00=y;
                 }
             }
-            
+             
         }}
 	limit++;
 	if(limit>=N*N*N){
@@ -629,57 +667,203 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
 
 int main()
 {
-    int N=10;	
+    int N=10, records;
+    int area=0;	
     bool win, lose;
+    std::string word1=" MOVE ";
+    std::string word2="BLOCKS";
     std::vector<std::vector<int>> map;
-    map=makemap(N, 3, 3);
     initscr();
     cbreak();
     noecho();
+    curs_set(0);
     start_color();
     init_pair(1, COLOR_RED, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
-
     init_pair(3, COLOR_BLUE, COLOR_BLACK);
     init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(5, COLOR_BLACK, COLOR_WHITE);
+    char mod;
+    json config;
+startGame:
+    std::ifstream  input_file("records.json");
+    
+     input_file >> config;
+    mvprintw(0, 0, "h:hard");
+    mvprintw(1, 0, "n:normal");
+    mvprintw(2, 0, "e:easy");
+    refresh();
+
+     std::cin>>mod;      
+    if(mod=='h'){
+    goto hard;
+    }
+    if(mod=='n'){
+    goto normal;
+    }
+    if(mod=='e'){
+    goto easy;
+    }
+    hard:
+ map=makemap(N, 4, 5);
 
     printmap(map, N);
-    for(int i = 0; i<10; i++){
-    map = muv(map, N);
-    map = muv3(map, N);
-    win=checkVin(map, N);
-	if(win==true){
-	goto start; 
-}
-    map = bestMuv(map, N);
-lose=checkLose(map, N);
-	if(lose==true){
-	goto start1; 
-}
+    for(;;){
 
+    attron(COLOR_PAIR(5)); // Включаем цвет 5 (черный текст, белый фон)
+    mvprintw(N+5, 0, "%s", word1.c_str()); // Выводим текст
+    attroff(COLOR_PAIR(5));
+    
+    map = muv(map, N);
+
+    attron(COLOR_PAIR(5)); // Включаем цвет 5 (черный текст, белый фон)
+    mvprintw(N+5, 0, "%s", word2.c_str()); // Выводим текст
+    attroff(COLOR_PAIR(5));
+
+    map = muv3(map, N);
+    win=checkVin(map, N, area);
+	if(win==true){
+ records=config["record"]["hardRec"];
+
+	goto start; 
     }
+    map = bestMuv(map, N);
+    map = bestMuv(map, N);
+
+    map = bestMuv(map, N);
+    lose=checkLose(map, N);
+    if(lose==true){
+	goto start1; 
+    }
+    }
+
+    normal:
+ map=makemap(N, 3, 3);
+
+    printmap(map, N);
+    for(;;){
+
+    attron(COLOR_PAIR(5)); // Включаем цвет 5 (черный текст, белый фон)
+    mvprintw(N+5, 0, "%s", word1.c_str()); // Выводим текст
+    attroff(COLOR_PAIR(5));
+    
+    map = muv(map, N);
+
+    attron(COLOR_PAIR(5)); // Включаем цвет 5 (черный текст, белый фон)
+    mvprintw(N+5, 0, "%s", word2.c_str()); // Выводим текст
+    attroff(COLOR_PAIR(5));
+
+    map = muv3(map, N);
+    win=checkVin(map, N, area);
+	if(win==true){
+records=config["record"]["normalRec"];
+
+	goto start; 
+    }
+
+    map = bestMuv(map, N);
+    lose=checkLose(map, N);
+    if(lose==true){
+	goto start1; 
+    }
+    }
+
+    easy:
+ map=makemap(N, 3, 2);
+
+    printmap(map, N);
+    for(;;){
+
+    attron(COLOR_PAIR(5)); // Включаем цвет 5 (черный текст, белый фон)
+    mvprintw(N+5, 0, "%s", word1.c_str()); // Выводим текст
+    attroff(COLOR_PAIR(5));
+    
+    map = muv(map, N);
+
+    attron(COLOR_PAIR(5)); // Включаем цвет 5 (черный текст, белый фон)
+    mvprintw(N+5, 0, "%s", word2.c_str()); // Выводим текст
+    attroff(COLOR_PAIR(5));
+
+    map = muv3(map, N);
+    win=checkVin(map, N, area);
+	if(win==true){
+records=config["record"]["easyRec"];
+
+	goto start; 
+    }
+
+    map = muv2(map, N);
+    lose=checkLose(map, N);
+    if(lose==true){
+	goto start1; 
+    }
+    }
+
 start:    
 {
 clear();
 int max_y, max_x;
   getmaxyx(stdscr, max_y, max_x);
 
-    const char* message = "WIN";
+  const char* message = "WIN";
   int message_len = strlen(message);
   int start_y = max_y / 2;
+  
   int start_x = (max_x - message_len) / 2;
-
-
   mvprintw(start_y, start_x, message);
+  
+  message = "score";
 
- 
+  mvprintw(start_y+2, start_x, message);
+  mvprintw(start_y+2, start_x+5,"%d", area);
+  mvprintw(start_y+3, start_x, "record");
+  mvprintw(start_y+3, start_x+6,"%d",records);
+
+if(area>config["record"]["hardRec"] and mod=='h'){
+mvprintw(start_y+4, start_x, "new record");
+std::ofstream output_file("records.json");
+config["record"]["hardRec"]=area;
+    output_file << config.dump(4);
+output_file.close();
+}
+
+if(area>config["record"]["normalRec"] and mod=='n'){
+mvprintw(start_y+4, start_x, "new record");
+std::ofstream output_file("records.json");
+config["record"]["normalRec"]=area;
+    output_file << config.dump(4);
+output_file.close();
+}
+
+if(area>config["record"]["easyRec"] and mod=='e'){
+mvprintw(start_y+4, start_x, "new record");
+std::ofstream output_file("records.json");
+config["record"]["easyRec"]=area;
+    output_file << config.dump(4);
+output_file.close();
+}
+
+
+refresh();
+
+  getch();
+
+    }
+   goto endGame;
+
+
+endGame:  
+  clear();
+  mvprintw(1, 0, "n:new game");
+  mvprintw(2, 0, "e:end");
   refresh();
+   std::cin>>mod;   
 
-    getch();
-    
+    if(mod=='n'){
+    goto startGame;
     }
    endwin(); 
-    return 0;
+   return 0;
 
 start1:    
 
@@ -697,13 +881,9 @@ int max_y, max_x;
 
  
   refresh();
+  getch();
+  goto endGame;
+  
 
-    getch();
-    
-    
- 
-   
 
-   endwin(); 
-    return 0;
 }
