@@ -1,7 +1,24 @@
 {
+    "lewels": {
+        "lev": {
+            "*": 2,
+            "@": 5,
+            "Rec": 8,
+            "muve": 1,
+            "saiz": 5,
+            "wall": false
+        },
+        "lev1": {
+            "*": 1,
+            "@": 1,
+            "muve": 2,
+            "saiz": 5,
+            "wall": true
+        }
+    },
     "record": {
         "easyRec": 2,
-        "hardRec": 11,
+        "hardRec": 1,
         "normalRec": 2
     }
 }
