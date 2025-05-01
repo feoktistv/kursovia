@@ -1,5 +1,13 @@
 {
     "lewels": {
+        "Horror": {
+            "*": 8,
+            "@": 8,
+            "Rec": 1,
+            "muve": 3,
+            "saiz": 20,
+            "wall": true
+        },
         "lev": {
             "*": 2,
             "@": 5,
@@ -17,8 +25,8 @@
         }
     },
     "record": {
-        "easyRec": 2,
-        "hardRec": 1,
+        "easyRec": 1,
+        "hardRec": 3,
         "normalRec": 2
     }
 }

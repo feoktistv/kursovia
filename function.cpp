@@ -3,25 +3,25 @@
 
 void printmap(std::vector<std::vector<int>> map, int N){
   
+  
+  int height, width;
+  getmaxyx(stdscr, height, width);
 
-  int height=30, width=40;
-  //getmaxyx(stdscr, height, width);
-
-    int startY =0;
-  int startX = 0;
+  int startY = (height-N)/2;
+  int startX = (width-N)/2;
 for (int i = 0; i < 2*N + 1; i++) { // +2 для рамок, сверху и снизу
     move(startY, startX + i); // Верхняя граница
     addch(ACS_HLINE);
 
-    move(startY + N + 1, startX + i); // Нижняя граница
+    move(startY + N + 1, startX + i); 
     addch(ACS_HLINE);
   }
 
-  for (int i = 0; i < N + 2; ++i) { // +2 для рамок, по бокам
-    move(startY + i, startX); // Левая граница
+  for (int i = 0; i < N + 2; ++i) { 
+    move(startY + i, startX); 
     addch(ACS_VLINE);
 
-    move(startY + i, startX + 2 * N + 1); // Правая граница
+    move(startY + i, startX + 2 * N + 1); 
     addch(ACS_VLINE);
   }
 
@@ -33,34 +33,39 @@ for (int i = 0; i < 2*N + 1; i++) { // +2 для рамок, сверху и снизу
   for (int i = 0; i < N; ++i) {
     for (int j = 0; j < N; ++j) {
                 if (map[i][j] == 0) {
-        mvprintw(i+1, j * 2+1, "- ");  // Умножаем j на 2 для пробела
+        mvprintw(startY + i+1,startX +  j * 2+1, "- ");  // Умножаем j на 2 для пробела
       }
       else if (map[i][j] == 1) {
 	attron(COLOR_PAIR(1));
-        mvprintw(i+1, j * 2+1, "@ ");  // Умножаем j на 2 для пробела
+        mvprintw(startY + i+1,startX +  j * 2+1, "@ ");  // Умножаем j на 2 для пробела
 	attroff(COLOR_PAIR(1));      
 	}
 	 else if (map[i][j] == 5) {
 	attron(COLOR_PAIR(4));
-        mvprintw(i+1, j * 2+1, "@ ");  // Умножаем j на 2 для пробела
+        mvprintw(startY + i+1,startX +  j * 2+1, "@ ");  // Умножаем j на 2 для пробела
 	attroff(COLOR_PAIR(4));      
 	}
 
 	 else if (map[i][j] == 2 || map[i][j] == 4) {
         attron(COLOR_PAIR(2));
-        mvprintw(i+1, j * 2+1, "* ");  // Умножаем j на 2 для пробела
+        mvprintw(startY + i+1,startX +  j * 2+1, "* ");  // Умножаем j на 2 для пробела
         attroff(COLOR_PAIR(2));
       } else if (map[i][j] == 3) {
-        mvprintw(i+1, j * 2+1, "# ");  // Умножаем j на 2 для пробела
+        mvprintw(startY + i+1,startX +  j * 2+1, "# ");  // Умножаем j на 2 для пробела
       }
  else if (map[i][j] == 6) {
-        mvprintw(i+1, j * 2+1, "x ");  // Умножаем j на 2 для пробела
+        mvprintw(startY + i+1,startX +  j * 2+1, "x ");  // Умножаем j на 2 для пробела
       }
 
     }
   }
-
-   refresh();  // Обновляем экран
+	mvprintw(startY +1, 0 , "v - move down");
+	mvprintw(startY +2, 0 , "< - move right");
+	mvprintw(startY +3, 0 , "> - move left");
+	mvprintw(startY , 0 , "^ - move up");	
+	mvprintw(startY -1, 0 , "enter - skip move");
+	mvprintw(startY -2, 0 , "s - save game");
+   refresh();  
 }
 std::vector<std::vector<int>> makemap(int N, int a, int b, bool wall){
     std::vector<std::vector<int>> map11;
@@ -119,37 +124,38 @@ std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N){
             
             if(map[i][j]==1){
 
-                char MM;
-                               map11[i][j]=5;
+                int ch;
+                map11[i][j]=5;
 		printmap(map11, N);
-
-		std::cin>>MM;
-              		map11[i][j]=0;
-                if(MM == 'd'){
+		map11[i][j]=0;
+		Q:
+		ch = getch(); 
+		switch (ch) {
+              	case KEY_RIGHT:
                     if(map[i][j+1]!=2){
                         map11[i][j+1]=1;
                     }
                     else{
                         map11[i][j+1]=6;
                     }
-                }
-                else if(MM == 'a'){
+          	    break;
+                case KEY_LEFT:
                     if(map[i][j-1]!=2){
                         map11[i][j-1]=1;
                     }
                     else{
                         map11[i][j-1]=6;
                     }
-                }
-                else if(MM == 'w'){
+                break;
+            	case KEY_UP:
                     if(map[i-1][j]!=2){
                         map11[i-1][j]=1;
                     }
                     else{
                         map11[i-1][j]=6;
                     }
-                }
-                else if(MM == 's'){
+                break;
+                case KEY_DOWN:
                     if(map[i+1][j]!=2){
                         map11[i+1][j]=1;
                     }
@@ -157,11 +163,14 @@ std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N){
                         map11[i+1][j]=6;
                     }
                 
-                }
-                else{
+		break;
+                case 10:
 			map11[i][j]=1;
-
-		}
+break;
+		case 's':
+                        saveGame(map, N);
+			goto Q;
+}
             printmap(map11, N);
                 
             }
@@ -255,34 +264,33 @@ std::vector<std::vector<int>> muv3(std::vector<std::vector<int>> map, int N){
         for(int j = 0; j<N; j++){
             
             if(map[i][j]==1){
-                char MM;
+                int ch;
                
                 map11[i][j]=5;
 		printmap(map11, N);
 			
-		std::cin>>MM;
+		
 		map11[i][j]=1;
 
-                
-                if(MM == 'd'){
+                Q:
+                ch = getch(); 
+		switch (ch) {
+		case KEY_RIGHT:
                         map11[i][j+1]=3;
-                }
-                else if(MM == 'a'){
+			break;
+                case KEY_LEFT:
                     map11[i][j-1]=3;
-                    
-                }
-                else if(MM == 'w'){
-                    
+			break;
+                case KEY_UP: 
                         map11[i-1][j]=3;
-                    
-                }
-                else if(MM == 's'){
-                   
+			break;
+                case KEY_DOWN:
                         map11[i+1][j]=3;
-                    
-                }
-            
-             //printmap(map11, N);    
+      			break;   
+		case 's':
+                        saveGame(map, N);
+			goto Q;           
+                }     
             }
         }
     }
@@ -655,8 +663,7 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
         
          len = map11[x00][y00];
     for(int i = 0; i<len-1; i++){   
-        //mapEnd[x00][y00] = 2;
-       if(x00+1<N and map11[x00+1][y00]<map11[x00][y00] and map11[x00+1][y00]!=inf){
+        if(x00+1<N and map11[x00+1][y00]<map11[x00][y00] and map11[x00+1][y00]!=inf){
                     
                     x00=x00+1;
                     
@@ -673,8 +680,7 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
         else if(y00+1<N and map11[x00][y00+1]<map11[x00][y00] and map11[x00][y00+1]!=inf){
                     
                     y00=y00+1;
-                }
-    //printmap(mapEnd, N); 
+                } 
     }
 		if(map[x00][y00] != 6 and  map[x00][y00] != 1){
                 mapEnd[x00][y00] = 2;}
@@ -692,3 +698,12 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
     return mapEnd; 
 }
 
+void saveGame(std::vector<std::vector<int>> map, int N){
+	
+	nlohmann::json config = map;
+	std::ofstream output_file("saves.json");
+	
+	output_file << config.dump(4);
+	output_file.close();
+ mvprintw(1,1, "game was saved");
+	}

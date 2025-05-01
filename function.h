@@ -20,6 +20,6 @@ using json = nlohmann::json;
 	bool checkVin(std::vector<std::vector<int>> map, int N, int &area);
 	bool checkLose(std::vector<std::vector<int>> map, int N);
 	std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N);
-
+	void saveGame(std::vector<std::vector<int>> map, int N);
 
 #endif
