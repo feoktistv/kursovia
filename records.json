@@ -5,14 +5,34 @@
             "@": 8,
             "Rec": 1,
             "muve": 3,
+	    "muve1": true,
             "saiz": 20,
+            "wall": true
+        },
+        "easy": {
+            "*": 3,
+            "@": 3,
+            "Rec": 2,
+            "muve": 1,
+            "muve1": false,
+            "saiz": 10,
+            "wall": false
+        },
+        "hard": {
+            "*": 3,
+            "@": 3,
+            "Rec": 1,
+            "muve": 1,
+            "muve1": true,
+            "saiz": 10,
             "wall": true
         },
         "lev": {
             "*": 2,
             "@": 5,
-            "Rec": 8,
+            "Rec": 0,
             "muve": 1,
+            "muve1": true,
             "saiz": 5,
             "wall": false
         },
@@ -20,12 +40,22 @@
             "*": 1,
             "@": 1,
             "muve": 2,
+	    "muve1": true,
             "saiz": 5,
             "wall": true
+        },
+        "normal": {
+            "*": 3,
+            "@": 3,
+            "Rec": 4,
+            "muve": 1,
+            "muve1": true,
+            "saiz": 10,
+            "wall": false
         }
     },
     "record": {
-        "easyRec": 1,
+        "easyRec": 2,
         "hardRec": 3,
         "normalRec": 2
     }

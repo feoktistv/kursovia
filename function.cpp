@@ -116,7 +116,7 @@ std::vector<std::vector<int>> makemap(int N, int a, int b, bool wall){
         return map11;
 }
 
-std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N){
+std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N, std::string &name, bool &muve1){
     std::vector<std::vector<int>> map11 = map;
     
     for(int i = 0; i<N; i++){
@@ -168,7 +168,7 @@ std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N){
 			map11[i][j]=1;
 break;
 		case 's':
-                        saveGame(map, N);
+                        saveGame(map, N, name, muve1);
 			goto Q;
 }
             printmap(map11, N);
@@ -257,7 +257,7 @@ usleep(10000);
     return map11;
 }
 
-std::vector<std::vector<int>> muv3(std::vector<std::vector<int>> map, int N){
+std::vector<std::vector<int>> muv3(std::vector<std::vector<int>> map, int N, std::string &name, bool &muve1){
     std::vector<std::vector<int>> map11 = map;
     
     for(int i = 0; i<N; i++){
@@ -288,7 +288,7 @@ std::vector<std::vector<int>> muv3(std::vector<std::vector<int>> map, int N){
                         map11[i+1][j]=3;
       			break;   
 		case 's':
-                        saveGame(map, N);
+                        saveGame(map, N, name, muve1);
 			goto Q;           
                 }     
             }
@@ -698,9 +698,12 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
     return mapEnd; 
 }
 
-void saveGame(std::vector<std::vector<int>> map, int N){
+void saveGame(std::vector<std::vector<int>> map, int N, std::string &name, bool &muve1){
 	
-	nlohmann::json config = map;
+	nlohmann::json config;
+	config["map"]=map;
+	config["name"]=name;
+	config["muve1"]=muve1;
 	std::ofstream output_file("saves.json");
 	
 	output_file << config.dump(4);
