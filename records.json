@@ -5,16 +5,18 @@
             "@": 8,
             "Rec": 1,
             "muve": 3,
-	    "muve1": true,
+            "muve1": true,
+            "name": "Horror",
             "saiz": 20,
             "wall": true
         },
         "easy": {
             "*": 3,
             "@": 3,
-            "Rec": 2,
+            "Rec": 3,
             "muve": 1,
             "muve1": false,
+            "name": "easy",
             "saiz": 10,
             "wall": false
         },
@@ -24,6 +26,7 @@
             "Rec": 1,
             "muve": 1,
             "muve1": true,
+            "name": "hard",
             "saiz": 10,
             "wall": true
         },
@@ -33,16 +36,9 @@
             "Rec": 0,
             "muve": 1,
             "muve1": true,
+            "name": "lev",
             "saiz": 5,
             "wall": false
-        },
-        "lev1": {
-            "*": 1,
-            "@": 1,
-            "muve": 2,
-	    "muve1": true,
-            "saiz": 5,
-            "wall": true
         },
         "normal": {
             "*": 3,
@@ -50,7 +46,17 @@
             "Rec": 4,
             "muve": 1,
             "muve1": true,
+            "name": "normal",
             "saiz": 10,
+            "wall": false
+        },
+        "wow": {
+            "*": 2,
+            "@": 5,
+            "muve": 5,
+            "muve1": true,
+            "name": "wow",
+            "saiz": 30,
             "wall": false
         }
     },

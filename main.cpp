@@ -21,8 +21,15 @@ int main()
 	init_pair(4, COLOR_YELLOW, COLOR_BLACK);
 	init_pair(5, COLOR_BLACK, COLOR_WHITE);
 	char mod;
-	bool wall, muve1;
+	
+	bool wall, muve1, code=false;
 	int saiz, mans, beds, muw;
+	std::string num;
+std::vector<std::string> Case = {
+        "case 1",
+        "case 2",
+	"case 3"
+    };
 
 	json config;
 nlohmann::json config1;
@@ -43,7 +50,8 @@ const char* message1 = "LOSE";
         "Normal",
         "Hard",
         "Special",
-	"load game",
+	"Quick load",
+	"Load game",
         "Exit"
     };
 int highlight = 0;
@@ -100,16 +108,78 @@ for(;;){
 else if (menuItems[highlight] == "Normal") {		
 goto normal;
 	}
-	else if (menuItems[highlight] == "load game") {
+		else if (menuItems[highlight] == "Quick load") {
     std::ifstream input_file("saves.json");
-    nlohmann::json config1;
-    input_file >> config1;
+     input_file >> config1;
     input_file.close();	
-	map=config1["map"].get<std::vector<std::vector<int>>>();
-	name=config1["name"];
-	muve1=config1["muve1"];
+	map=config1["Quick"]["map"].get<std::vector<std::vector<int>>>();
+	name=config1["Quick"]["name"];
+	muve1=config1["Quick"]["muve1"];
+	muw=config1["Quick"]["muve"];
+
 	goto ldgame;
 	}
+
+    else if (menuItems[highlight] == "Load game") {
+    std::ifstream input_file("saves.json");
+    input_file >> config1;
+    input_file.close();	
+    clear();refresh();
+    highlight=0;
+
+	for(;;){
+    mvprintw(1, xMax / 2 - 5, "GAME MENU");
+	    for (int i = 0; i < Case.size(); ++i) {
+    if (i == highlight) {
+         attron(A_REVERSE);             }
+            mvprintw(yMax / 2 -Case.size() / 2 + i, xMax / 2 - Case[i].length() / 2, Case[i].c_str());
+            attroff(A_REVERSE); 
+        }
+
+        refresh(); 
+
+        
+        int choice = getch();
+        switch (choice) {
+            case KEY_UP:
+                highlight--;
+                if (highlight == -1) {
+                    highlight = Case.size() - 1;
+                }
+                break;
+            case KEY_DOWN:
+                highlight++;
+                if (highlight == Case.size()) {
+                    highlight = 0; 
+                }
+                break;
+            case 10:
+            {
+                
+                if (Case[highlight] == "case 1") {
+                   num = "1";
+		goto Q;
+
+                }
+	if (Case[highlight] ==  "case 2") {	
+	num = "2";
+	goto Q;
+
+	}
+	if (Case[highlight] ==  "case 3") {	
+	num = "3";
+	goto Q;
+	}
+}}}
+	Q:
+	map=config1["old"][num]["map"].get<std::vector<std::vector<int>>>();
+	name=config1["old"][num]["name"];
+	muve1=config1["old"][num]["muve1"];
+	muw=config1["old"][num]["muve"];
+
+	goto ldgame;
+	}
+
 
 else {
 		goto spesial;
@@ -182,7 +252,7 @@ for(;;){
             case KEY_UP:
                 highlight--;
                 if (highlight == -1) {
-                    highlight = menuItems.size() - 1;
+                    highlight = endGame.size() - 1;
                 }
                 break;
             case KEY_DOWN:
@@ -241,7 +311,8 @@ spesial:
 	std::cin >> wall;
 	std::cout << "best muve * (1/0): " << std::endl;
 	std::cin >> muve1;
-
+	
+	config["lewels"][name]["name"] = name;
         config["lewels"][name]["saiz"] = saiz;
         config["lewels"][name]["@"] = mans;
         config["lewels"][name]["*"] = beds;
@@ -255,7 +326,17 @@ spesial:
 
 	}
         else if (mod == 'o') {
-        std::cout << config["lewels"] << std::endl;
+	for(auto m : config["lewels"]){
+	std::cout <<m["name"]<< std::endl;
+	
+        std::cout << "  saiz: " << m["saiz"] << std::endl;
+            std::cout << "  @: " << m["@"]<< std::endl;
+            std::cout << "  *: " << m["*"]<< std::endl;
+            std::cout << "  muve: " << m["muve"]<< std::endl;
+            std::cout << "  wall: " << m["wall"]<< std::endl;
+	    std::cout << "  best muve: " << m["muve1"]<< std::endl;
+
+}
         std::cout << "name level: " << std::endl;
         std::cin.ignore(); 
         std::getline(std::cin, name);
@@ -278,6 +359,7 @@ spesial:
 		getch();
         }}
 game:
+	code=false;
 	initscr();
 	cbreak();
 	curs_set(0);
@@ -298,24 +380,27 @@ game:
 		attroff(COLOR_PAIR(5));
 
 
-	map = muv(map, saiz, name, muve1);
-
+	map = muv(map, saiz, name, muve1, code, muw);
+	if(code){goto startGame;}
 	attron(COLOR_PAIR(5)); 
-		mvprintw(yMax/2, 0, "%s", word2.c_str());
-		attroff(COLOR_PAIR(5));
+	mvprintw(yMax/2, 0, "%s", word2.c_str());
+	attroff(COLOR_PAIR(5));
 
-	map = muv3(map, saiz, name, muve1);
-
+	map = muv3(map, saiz, name, muve1, code, muw);
+	if(code){goto startGame;}
 	win=checkVin(map, saiz, area);
-	if(win==true) {
+
+	if(win) {
 		goto start11;
 		}
+	
 	for(int i=0; i<muw; i++){
-	if(muve1){
-	map = bestMuv(map, saiz);}
-	else{map =  muv2(map, N);}}
+	if(muve1){map = bestMuv(map, saiz);}
+	else{map =  muv2(map, saiz);}
+	}
 	lose=checkLose(map, saiz);
-	if(lose==true) {
+	if(lose) {
+		
 		goto start1;
 		}
 	}
@@ -331,12 +416,12 @@ start11:
 		int start_x = (max_x - message_len) / 2;
 		mvprintw(start_y, start_x, message);
 
-		message = "score";
+		message = "score ";
 
 		mvprintw(start_y+2, start_x, message);
-		mvprintw(start_y+2, start_x+5,"%d", area);
-		mvprintw(start_y+3, start_x, "record");
-		mvprintw(start_y+3, start_x+6,"%d",records);
+		mvprintw(start_y+2, start_x+6,"%d", area);
+		mvprintw(start_y+3, start_x, "record ");
+		mvprintw(start_y+3, start_x+7,"%d",records);
 
 		if(area>config["lewels"][name]["Rec"]) {
 			mvprintw(start_y+4, start_x, "new record");

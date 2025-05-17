@@ -65,6 +65,8 @@ for (int i = 0; i < 2*N + 1; i++) { // +2 для рамок, сверху и снизу
 	mvprintw(startY , 0 , "^ - move up");	
 	mvprintw(startY -1, 0 , "enter - skip move");
 	mvprintw(startY -2, 0 , "s - save game");
+	mvprintw(startY -3, 0 , "m - menu");
+
    refresh();  
 }
 std::vector<std::vector<int>> makemap(int N, int a, int b, bool wall){
@@ -116,19 +118,18 @@ std::vector<std::vector<int>> makemap(int N, int a, int b, bool wall){
         return map11;
 }
 
-std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N, std::string &name, bool &muve1){
+std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N, std::string &name, bool &muve1, bool &code,int &muve){
     std::vector<std::vector<int>> map11 = map;
-    
-    for(int i = 0; i<N; i++){
+        for(int i = 0; i<N; i++){
         for(int j = 0; j<N; j++){
             
             if(map[i][j]==1){
 
                 int ch;
+		Q:
                 map11[i][j]=5;
 		printmap(map11, N);
 		map11[i][j]=0;
-		Q:
 		ch = getch(); 
 		switch (ch) {
               	case KEY_RIGHT:
@@ -166,11 +167,33 @@ std::vector<std::vector<int>> muv(std::vector<std::vector<int>> map, int N, std:
 		break;
                 case 10:
 			map11[i][j]=1;
-break;
+		break;
 		case 's':
-                        saveGame(map, N, name, muve1);
+                        saveGame(map, N, name, muve1, muve);
 			goto Q;
+			break;
+		case 'm':
+                        int k=menu(map, N, name, muve1, muve);
+			switch (k) {
+			case 1:
+				clear();
+				goto Q;
+				break;
+			case 0:
+				clear();
+				endwin();
+				std::exit(EXIT_SUCCESS);
+				break;
+			case 2:
+				clear();
+				code = true;
+				return map11;
+				break;
+
+
 }
+}
+
             printmap(map11, N);
                 
             }
@@ -257,7 +280,7 @@ usleep(10000);
     return map11;
 }
 
-std::vector<std::vector<int>> muv3(std::vector<std::vector<int>> map, int N, std::string &name, bool &muve1){
+std::vector<std::vector<int>> muv3(std::vector<std::vector<int>> map, int N, std::string &name, bool &muve1, bool &code, int &muve){
     std::vector<std::vector<int>> map11 = map;
     
     for(int i = 0; i<N; i++){
@@ -288,7 +311,7 @@ std::vector<std::vector<int>> muv3(std::vector<std::vector<int>> map, int N, std
                         map11[i+1][j]=3;
       			break;   
 		case 's':
-                        saveGame(map, N, name, muve1);
+                        saveGame(map, N, name, muve1, muve);
 			goto Q;           
                 }     
             }
@@ -698,15 +721,174 @@ std::vector<std::vector<int>> bestMuv(std::vector<std::vector<int>> map, int N){
     return mapEnd; 
 }
 
-void saveGame(std::vector<std::vector<int>> map, int N, std::string &name, bool &muve1){
+void saveGame(std::vector<std::vector<int>> map, int N, std::string &name, bool &muve1, int &muve){
 	
 	nlohmann::json config;
-	config["map"]=map;
-	config["name"]=name;
-	config["muve1"]=muve1;
+	std::ifstream  input_file("saves.json");
+	input_file >> config;
+	input_file.close();
+	config["Quick"]["map"]=map;
+	config["Quick"]["name"]=name;
+	config["Quick"]["muve1"]=muve1;
+	config["Quick"]["muve"]=muve;
+
 	std::ofstream output_file("saves.json");
 	
-	output_file << config.dump(4);
+	output_file  << std::setw(4) << config << std::endl; 
 	output_file.close();
  mvprintw(1,1, "game was saved");
 	}
+
+void saveGameOld(std::vector<std::vector<int>> map, int N, std::string &name, bool &muve1, int &muve){
+	clear();
+	nlohmann::json config;
+	std::string num;
+	std::ifstream  input_file("saves.json");
+	input_file >> config;
+	input_file.close();
+
+	int highlight = 0;
+	std::vector<std::string> menuItems = {
+        "case 1",
+        "case 2",
+	"case 3"
+    };
+
+	int yMax, xMax;
+	getmaxyx(stdscr, yMax, xMax);
+
+	for(;;){
+	clear(); 
+
+        
+        mvprintw(1, xMax / 2 - 5, "GAME MENU");
+
+        
+        for (int i = 0; i < menuItems.size(); ++i) {
+            if (i == highlight) {
+                attron(A_REVERSE);             }
+            mvprintw(yMax / 2 - menuItems.size() / 2 + i, xMax / 2 - menuItems[i].length() / 2, menuItems[i].c_str());
+            attroff(A_REVERSE); 
+        }
+
+        refresh(); 
+
+        
+        int choice = getch();
+        switch (choice) {
+            case KEY_UP:
+                highlight--;
+                if (highlight == -1) {
+                    highlight = menuItems.size() - 1;
+                }
+                break;
+            case KEY_DOWN:
+                highlight++;
+                if (highlight == menuItems.size()) {
+                    highlight = 0; 
+                }
+                break;
+            case 10:
+            {
+                
+                if (menuItems[highlight] == "case 1") {
+                   num = "1";
+		goto Q;
+
+                }
+	if (menuItems[highlight] ==  "case 2") {	
+	num = "2";
+	goto Q;
+
+	}
+	if (menuItems[highlight] ==  "case 3") {	
+	num = "3";
+	goto Q;
+	}
+	
+	
+
+}}}
+Q:
+
+
+	config["old"][num]["map"]=map;
+	config["old"][num]["name"]=name;
+	config["old"][num]["muve1"]=muve1;
+	config["old"][num]["muve"]=muve;
+
+	std::ofstream output_file("saves.json");
+	
+	output_file << std::setw(4) << config << std::endl; 
+	output_file.close();
+
+	}
+
+
+int menu(std::vector<std::vector<int>> map, int N, std::string &name, bool &muve1, int &muve){
+	int highlight = 0;
+	std::vector<std::string> menuItems = {
+        "Continue",
+	"Save game",
+	"Exit to menu",
+	"Exit game"
+    };
+
+	int yMax, xMax;
+	getmaxyx(stdscr, yMax, xMax);
+
+	for(;;){
+	clear(); 
+
+        
+        mvprintw(1, xMax / 2 - 5, "GAME MENU");
+
+        
+        for (int i = 0; i < menuItems.size(); ++i) {
+            if (i == highlight) {
+                attron(A_REVERSE);             }
+            mvprintw(yMax / 2 - menuItems.size() / 2 + i, xMax / 2 - menuItems[i].length() / 2, menuItems[i].c_str());
+            attroff(A_REVERSE); 
+        }
+
+        refresh(); 
+
+        
+        int choice = getch();
+        switch (choice) {
+            case KEY_UP:
+                highlight--;
+                if (highlight == -1) {
+                    highlight = menuItems.size() - 1;
+                }
+                break;
+            case KEY_DOWN:
+                highlight++;
+                if (highlight == menuItems.size()) {
+                    highlight = 0; 
+                }
+                break;
+            case 10:
+            {
+                
+                if (menuItems[highlight] == "Exit game") {
+                    return 0;
+                }
+	if (menuItems[highlight] ==  "Continue") {	
+	return 1;
+
+	}
+	if (menuItems[highlight] ==  "Exit to menu") {	
+	return 2;
+
+	}
+	
+	if (menuItems[highlight] ==  "Save game") {	
+	 saveGameOld(map, N, name, muve1, muve);
+
+	}
+
+
+}}}
+
+}
