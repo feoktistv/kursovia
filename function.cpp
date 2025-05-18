@@ -288,14 +288,14 @@ std::vector<std::vector<int>> muv3(std::vector<std::vector<int>> map, int N, std
             
             if(map[i][j]==1){
                 int ch;
-               
+               Q:
                 map11[i][j]=5;
 		printmap(map11, N);
 			
 		
 		map11[i][j]=1;
 
-                Q:
+                
                 ch = getch(); 
 		switch (ch) {
 		case KEY_RIGHT:
@@ -312,7 +312,25 @@ std::vector<std::vector<int>> muv3(std::vector<std::vector<int>> map, int N, std
       			break;   
 		case 's':
                         saveGame(map, N, name, muve1, muve);
-			goto Q;           
+			goto Q; 
+		case 'm':
+                        int k=menu(map, N, name, muve1, muve);
+			switch (k) {
+			case 1:
+				clear();
+				goto Q;
+				break;
+			case 0:
+				clear();
+				endwin();
+				std::exit(EXIT_SUCCESS);
+				break;
+			case 2:
+				clear();
+				code = true;
+				return map11;
+				break;
+          		}
                 }     
             }
         }
