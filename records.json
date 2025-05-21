@@ -43,7 +43,6 @@
         "normal": {
             "*": 3,
             "@": 3,
-            "Rec": 4,
             "muve": 1,
             "muve1": true,
             "name": "normal",

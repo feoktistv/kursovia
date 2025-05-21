@@ -100,13 +100,18 @@ for(;;){
                     return 0;
                 }
 	if (menuItems[highlight] == "Hard") {	
-	goto hard;
+	name="hard";
+	goto set;
 	}
 	else if (menuItems[highlight] == "Easy") {
-	goto easy;
+	name="easy";
+	goto set;
+
 	}
-else if (menuItems[highlight] == "Normal") {		
-goto normal;
+	else if (menuItems[highlight] == "Normal") {		
+	name="normal";
+	goto set;
+
 	}
 		else if (menuItems[highlight] == "Quick load") {
     std::ifstream input_file("saves.json");
@@ -117,7 +122,8 @@ goto normal;
 	muve1=config1["Quick"]["muve1"];
 	muw=config1["Quick"]["muve"];
 
-	goto ldgame;
+	saiz = map[0].size();
+goto gameS;
 	}
 
     else if (menuItems[highlight] == "Load game") {
@@ -177,7 +183,9 @@ goto normal;
 	muve1=config1["old"][num]["muve1"];
 	muw=config1["old"][num]["muve"];
 
-	goto ldgame;
+	saiz = map[0].size();
+goto gameS;
+
 	}
 
 
@@ -188,12 +196,7 @@ else {
 }}}
 noecho();
 
-ldgame:
-saiz = map[0].size(); muw=1;
-goto gameS;
-
-hard:
-	    name = "hard";
+set:
 	    saiz = config["lewels"][name]["saiz"];
             mans = config["lewels"][name]["@"];
             beds = config["lewels"][name]["*"];
@@ -201,27 +204,6 @@ hard:
             wall = config["lewels"][name]["wall"].get<bool>();
 	    muve1 = config["lewels"][name]["muve1"].get<bool>();
 
-	goto game;
-normal:
-		name = "normal";
-	    saiz = config["lewels"][name]["saiz"];
-            mans = config["lewels"][name]["@"];
-            beds = config["lewels"][name]["*"];
-            muw = config["lewels"][name]["muve"];
-            wall = config["lewels"][name]["wall"].get<bool>();
-	    muve1 = config["lewels"][name]["muve1"].get<bool>();
-
-	goto game;
-
-easy:
-	name = "easy";
-	    saiz = config["lewels"][name]["saiz"];
-            mans = config["lewels"][name]["@"];
-            beds = config["lewels"][name]["*"];
-            muw = config["lewels"][name]["muve"];
-            wall = config["lewels"][name]["wall"].get<bool>();
-	    muve1 = config["lewels"][name]["muve1"].get<bool>();
-		
 	goto game;
 
 
@@ -373,6 +355,9 @@ game:
 
 	map = makemap(saiz,beds ,mans, wall);
 	gameS:
+	win=false;
+	lose = false;
+
 	clear(); refresh();
 	for(;;)
 	{	attron(COLOR_PAIR(5)); 
@@ -397,13 +382,14 @@ game:
 	for(int i=0; i<muw; i++){
 	if(muve1){map = bestMuv(map, saiz);}
 	else{map =  muv2(map, saiz);}
-	}
-	lose=checkLose(map, saiz);
+lose=checkLose(map, saiz);
 	if(lose) {
 		
 		goto start1;
 		}
-	}
+	
+}
+		}
 start11:
 	clear();
 		int max_y, max_x;

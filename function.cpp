@@ -314,7 +314,7 @@ std::vector<std::vector<int>> muv3(std::vector<std::vector<int>> map, int N, std
                         saveGame(map, N, name, muve1, muve);
 			goto Q; 
 		case 'm':
-                        int k=menu(map, N, name, muve1, muve);
+                        int k=menu(map11, N, name, muve1, muve);
 			switch (k) {
 			case 1:
 				clear();
